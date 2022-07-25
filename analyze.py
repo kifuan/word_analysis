@@ -5,9 +5,7 @@ import re
 import matplotlib.pyplot as plt
 from typing import *
 
-# ==========
-# | Parser |
-# ===========
+ParsedData = Dict[str, List[str]]
 
 
 class ScanningError(Exception):
@@ -36,7 +34,7 @@ def parse_metadata(line: str, current_line: int) -> Tuple[bool, str]:
                         f'datetime, which is what we want.')
 
 
-def parse_file(lines: List[str]) -> Dict[str, List[str]]:
+def parse_file(lines: List[str]) -> ParsedData:
     result = dict()
     # The state of scanning.
     scanning_state = False
@@ -67,14 +65,15 @@ def parse_file(lines: List[str]) -> Dict[str, List[str]]:
     return result
 
 
-def parse(txt_path: str) -> Dict[str, List[str]]:
+def parse(txt_path: str) -> ParsedData:
     with open(txt_path, 'r', encoding='utf-8') as f:
         lines = [line.strip('\n') for line in f if line.strip('\n') != '']
     return parse_file(lines)
 
+
 # Read stopwords
-with open('stopwords.txt', 'r', encoding='utf-8') as f:
-    STOPWORDS = {word.strip('\n') for word in f}
+with open('stopwords.txt', 'r', encoding='utf-8') as stopwords_f:
+    STOPWORDS = {word.strip('\n') for word in stopwords_f}
 
 
 def preprocess_messages(messages: List[str]) -> List[str]:
@@ -91,7 +90,7 @@ def count_words(messages: List[str]) -> Dict[str, int]:
     return collections.Counter(words)
 
 
-def get_words_nums(data: Dict[str, List[str]], qid: str, limit: int) -> Tuple[Iterable[str], Iterable[int]]:
+def get_words_nums(data: ParsedData, qid: str, limit: int) -> Tuple[Iterable[str], Iterable[int]]:
     if qid not in data.keys():
         raise KeyError(f'{qid} does not exist in the file. '
                        'Please ensure that you should find him/her by QQ ID or Email.')
