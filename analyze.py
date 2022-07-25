@@ -72,17 +72,9 @@ def parse(txt_path: str) -> Dict[str, List[str]]:
         lines = [line.strip('\n') for line in f if line.strip('\n') != '']
     return parse_file(lines)
 
-
-# ========
-# | Plot |
-# ========
-
 # Read stopwords
 with open('stopwords.txt', 'r', encoding='utf-8') as f:
     STOPWORDS = {word.strip('\n') for word in f}
-
-# Support for Chinese characters
-plt.rcParams["font.sans-serif"] = ['Microsoft YaHei', 'Heiti']
 
 
 def preprocess_messages(messages: List[str]) -> List[str]:
@@ -99,7 +91,7 @@ def count_words(messages: List[str]) -> Dict[str, int]:
     return collections.Counter(words)
 
 
-def plot(data: Dict[str, List[str]], qid: str, limit: int):
+def get_words_nums(data: Dict[str, List[str]], qid: str, limit: int) -> Tuple[Iterable[str], Iterable[int]]:
     if qid not in data.keys():
         raise KeyError(f'{qid} does not exist in the file. '
                        'Please ensure that you should find him/her by QQ ID or Email.')
@@ -109,16 +101,21 @@ def plot(data: Dict[str, List[str]], qid: str, limit: int):
     # Sort the words by frequencies
     items = sorted(counter.items(), key=lambda x: x[1], reverse=True)[:limit]
     words, nums = zip(*items)
-    plt.bar(words, nums)
-    plt.title(f'{qid}的词频 - Top{limit}')
-    plt.show()
+    return words, nums
+
+
+# Support for Chinese characters
+plt.rcParams["font.sans-serif"] = ['Microsoft YaHei', 'Heiti']
 
 
 def main():
     name, qid, limit = sys.argv[1:]
     limit = int(limit)
     data = parse(f'{name}.txt')
-    plot(data, qid, limit)
+    words, nums = get_words_nums(data, qid, limit)
+    plt.bar(words, nums)
+    plt.title(f'{qid}的词频 - Top{limit}')
+    plt.show()
 
 
 if __name__ == '__main__':
