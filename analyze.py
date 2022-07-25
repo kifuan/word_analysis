@@ -77,6 +77,10 @@ def parse(txt_path: str) -> Dict[str, List[str]]:
 # | Plot |
 # ========
 
+# Read stopwords
+with open('stopwords.txt', 'r', encoding='utf-8') as f:
+    STOPWORDS = {word.strip('\n') for word in f}
+
 # Support for Chinese characters
 plt.rcParams["font.sans-serif"] = ['Microsoft YaHei', 'Heiti']
 
@@ -91,7 +95,7 @@ def preprocess_messages(messages: List[str]) -> List[str]:
 def count_words(messages: List[str]) -> Dict[str, int]:
     words = []
     for message in messages:
-        words.extend(jieba.cut(message))
+        words.extend(set(jieba.cut(message)) - STOPWORDS)
     return collections.Counter(words)
 
 
