@@ -97,7 +97,7 @@ def count_words(messages: List[str]) -> Dict[str, int]:
 
 def plot(data: Dict[str, List[str]], qid: str, limit: int):
     if qid not in data.keys():
-        raise KeyError(f'{qid} does not exist in the file.'
+        raise KeyError(f'{qid} does not exist in the file. '
                        'Please ensure that you should find him/her by QQ ID or Email.')
 
     messages = preprocess_messages(data[qid])
