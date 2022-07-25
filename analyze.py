@@ -97,7 +97,7 @@ def get_words_nums(data: ParsedData, qid: str, limit: int) -> Tuple[Iterable[str
 
     messages = preprocess_messages(data[qid])
     counter = count_words(messages)
-    # Sort the words by frequencies
+    # Sort the words by counts.
     items = sorted(counter.items(), key=lambda x: x[1], reverse=True)[:limit]
     words, nums = zip(*items)
     return words, nums
