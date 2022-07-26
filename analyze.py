@@ -38,7 +38,9 @@ def parse_metadata(line: str, current_line: int) -> Tuple[bool, str]:
                         f'datetime, which is what we want.')
 
 
-def parse_file(lines: List[str]) -> ParsedData:
+def parse(txt_path: str) -> ParsedData:
+    with open(txt_path, 'r', encoding='utf-8') as f:
+        lines = [line.strip('\n') for line in f if line.strip('\n') != '']
     result = dict()
     # The state of scanning.
     scanning_state = False
@@ -67,12 +69,6 @@ def parse_file(lines: List[str]) -> ParsedData:
             raise ScanningError(f'It is not scanning and this line is not metadata. Current line: {i+1}')
 
     return result
-
-
-def parse(txt_path: str) -> ParsedData:
-    with open(txt_path, 'r', encoding='utf-8') as f:
-        lines = [line.strip('\n') for line in f if line.strip('\n') != '']
-    return parse_file(lines)
 
 
 def preprocess_messages(messages: List[str]) -> List[str]:
