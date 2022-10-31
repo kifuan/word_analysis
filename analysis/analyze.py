@@ -21,10 +21,14 @@ def preprocess_messages(messages: list[str]) -> list[str]:
     return [msg for msg in messages_with_empty if msg != '']
 
 
+def remove_stopwords(it: Iterable[str]) -> list[str]:
+    return [item for item in it if item not in STOPWORDS]
+
+
 def make_words_counter(messages: list[str]) -> dict[str, int]:
     words = []
     for message in messages:
-        words.extend(set(jieba.cut(message)) - STOPWORDS)
+        words.extend(remove_stopwords(jieba.cut(message)))
     return collections.Counter(words)
 
 
