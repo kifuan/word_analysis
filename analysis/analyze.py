@@ -1,17 +1,18 @@
+import re
 import sys
 import jieba
+import pkgutil
 import collections
-import re
 import matplotlib.pyplot as plt
-import importlib.resources as pkg_resources
 from typing import Iterable
 
 from .parser import MessageParser, WordData
 
-
-# Read stopwords.
-with pkg_resources.open_text('analysis', 'stopwords.txt', encoding='utf-8') as stopwords_f:
-    STOPWORDS = {word.strip('\n') for word in stopwords_f}
+STOPWORDS = set(
+    pkgutil.get_data(__name__, 'stopwords.txt')
+    .decode('utf-8')
+    .splitlines()
+)
 
 
 def preprocess_messages(messages: list[str]) -> list[str]:
