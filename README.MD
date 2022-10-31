@@ -12,7 +12,7 @@
    > pip install -r requirements.txt
    ```
 
-3. 找到你想要迫害的群，按照如下步骤操作：
+3. 找到你想要迫害的群/好友，按照如下步骤操作：
 
    ![Step 1 2](screenshots/1.png)
 
