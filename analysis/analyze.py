@@ -3,14 +3,14 @@ import jieba
 import collections
 import re
 import matplotlib.pyplot as plt
-
+import importlib.resources as pkg_resources
 from typing import Iterable
 
 from .parser import MessageParser, WordData
 
 
 # Read stopwords.
-with open('../stopwords.txt', 'r', encoding='utf-8') as stopwords_f:
+with pkg_resources.open_text('analysis', 'stopwords.txt', encoding='utf-8') as stopwords_f:
     STOPWORDS = {word.strip('\n') for word in stopwords_f}
 
 
@@ -48,7 +48,7 @@ plt.rcParams["font.sans-serif"] = ['Microsoft YaHei', 'Heiti']
 def main():
     name, qid, limit = sys.argv[1:]
     limit = int(limit)
-    data = MessageParser.get_parser('group').parse_file(f'{name}.txt')
+    data = MessageParser.get_parser('group').parse_file(name)
     words, nums = count(data, qid, limit)
     plt.bar(words, nums)
     plt.title(f'{qid}的词频 - Top{limit}')
