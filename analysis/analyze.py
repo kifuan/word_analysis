@@ -1,5 +1,4 @@
 import re
-import sys
 import jieba
 import pkgutil
 import collections
@@ -46,10 +45,9 @@ def count(data: WordData, qid: str, limit: int) -> tuple[Iterable[str], Iterable
 plt.rcParams["font.sans-serif"] = ['Microsoft YaHei', 'Heiti']
 
 
-def main():
-    name, qid, limit = sys.argv[1:]
+def main(path: str, mode: str, qid: str, limit: int):
     limit = int(limit)
-    data = MessageParser.get_parser('group').parse_file(name)
+    data = MessageParser.get_parser(mode).parse_file(path)
     words, nums = count(data, qid, limit)
     plt.bar(words, nums)
     plt.title(f'{qid}的词频 - Top{limit}')
