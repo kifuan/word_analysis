@@ -62,9 +62,14 @@ class WordCounter(Counter):
     def count(self) -> dict[str, int]:
         result = {}
         for qid, msgs in self.data.items():
+            msgs = cut_messages(msgs)
+            count = sum(msgs.count(word) for word in self.words)
+            if count == 0:
+                continue
+
             name = self.parser.get_display_name(qid)
             if name in result:
                 print(f'There are two or more people named {name}, we will keep whose qid is {qid}', file=sys.stderr)
-            msgs = cut_messages(msgs)
-            result[name[:NAME_LIMIT]] = sum(msgs.count(word) for word in self.words)
+            result[name[:NAME_LIMIT]] = count
+
         return result
