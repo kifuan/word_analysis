@@ -39,10 +39,16 @@
 7. 现在可以用了，打开Console，输入类似于这样的命令：
 
    ```bash
-   > python main.py test.txt 111222333 30
+   > python main.py test.txt group 111222333 30
+   > python main.py test.txt friend NAME 30
    ```
 
-   + `test.txt` 是你保存的**文件名**。
-   + `111222333` 是你要找的人的**QQ号**，具体是QQ号还是QQ邮箱请到txt记录里面看这个人后面跟着的是什么。
+   + `test.txt` 是你保存的**文件名**
+   + `group/friend` 
+      + 如果是群聊就是 `group`
+      + 如果是好友就是 `friend`
+   + `111222333/NAME`
+      + 如果是好友模式，你需要输入文件里显示的**用户名**
+      + 如果是群聊模式，你需要输入这个人的**QQ号**
    + `30` 是筛选出前多少个
 
