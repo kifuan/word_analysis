@@ -129,7 +129,7 @@ class GroupMessageParser(MessageParser):
 
         raise ScanningError(
             f'Cannot find qid or email in line {line_number + 1}.\n'
-            f'Content: {line}.'
+            f'Content: {line}\n'
             'Did you forget to choose the mode to friend?'
         )
 
