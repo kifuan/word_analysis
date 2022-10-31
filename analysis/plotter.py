@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 from typing import Iterable
-from .counter import make_counter
+from .counter import Counter
 from .parser import MessageParser
 
 # Support for Chinese characters.
@@ -12,10 +12,19 @@ def get_topn(counter: dict[str, int], limit: int) -> tuple[Iterable[str], Iterab
     return words, counts
 
 
-def plot(file: str, mode: str, qid: str, limit: int):
+def plot_for_person(*, file: str, mode: str, qid: str, limit: int):
     parser = MessageParser.get_parser(mode)
     data = parser.parse_file(file)
-    words, nums = get_topn(make_counter(data, qid), limit)
+    words, nums = get_topn(Counter.for_person(qid, data).count(), limit)
     plt.bar(words, nums)
     plt.title(f'{parser.get_display_name(qid)}的词频 - Top{limit}')
+    plt.show()
+
+
+def plot_for_word(*, file: str, mode: str, word: str, limit: int):
+    parser = MessageParser.get_parser(mode)
+    data = parser.parse_file(file)
+    people, nums = get_topn(Counter.for_word(word, data, parser).count(), limit)
+    plt.bar(people, nums)
+    plt.title(f'{word}出现的频率 - Top{limit}')
     plt.show()

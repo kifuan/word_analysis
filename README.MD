@@ -26,6 +26,7 @@
 
    ```bash
    > python main.py -f test.txt -m group -q 111222333 -l 30
+   > python main.py -f test.txt -w CERTAIN_WORD -m group -l 5
    ```
 
    + `-f, --file` 是你保存的**文件名**
@@ -36,4 +37,5 @@
       + 如果是好友模式，你需要输入文件里显示的**用户名**
       + 如果是群聊模式，你需要输入这个人的**QQ号**
    + `-l, --limit` 是筛选出前多少个
+   + `-w, --word` 看谁说这个词的频率高，当它有值时无需设置 `qid`
 
