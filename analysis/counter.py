@@ -12,6 +12,8 @@ STOPWORDS = (
     .splitlines()
 )
 
+NAME_LIMIT = 7
+
 # Remove emojis, spaces, [xxx], @xxx.
 REMOVE_MESSAGE_PATTERN = re.compile(r'[\U00010000-\U0010ffff]|\s|(\[.*?])|(@.+\s)')
 
@@ -28,8 +30,8 @@ def cut_messages(messages: list[str]) -> list[str]:
 
 class Counter(ABC):
     @staticmethod
-    def for_word(word: str, data: LineData, parser: MessageParser) -> 'Counter':
-        return WordCounter(word, data, parser)
+    def for_words(words: list[str], data: LineData, parser: MessageParser) -> 'Counter':
+        return WordCounter(words, data, parser)
 
     @staticmethod
     def for_person(qid: str, data: LineData) -> 'Counter':
@@ -52,16 +54,17 @@ class PersonCounter(Counter):
 
 
 class WordCounter(Counter):
-    def __init__(self, word: str, data: LineData, parser: MessageParser):
-        self.word = word
+    def __init__(self, words: list[str], data: LineData, parser: MessageParser):
+        self.words = words
         self.data = data
         self.parser = parser
-    
+
     def count(self) -> dict[str, int]:
         result = {}
         for qid, msgs in self.data.items():
             name = self.parser.get_display_name(qid)
             if name in result:
                 print(f'There are two or more people named {name}, we will keep whose qid is {qid}', file=sys.stderr)
-            result[name] = cut_messages(msgs).count(self.word)
+            msgs = cut_messages(msgs)
+            result[name[:NAME_LIMIT]] = sum(msgs.count(word) for word in self.words)
         return result

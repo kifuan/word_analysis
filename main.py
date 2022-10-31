@@ -1,6 +1,7 @@
 import sys
 import argparse
-from analysis import plot_for_person, plot_for_word, parser_table
+
+from analysis import plot_for_person, plot_for_words, parser_table
 
 
 def parse_args():
@@ -12,16 +13,16 @@ def parse_args():
     parser.add_argument('-l', '--limit', action='store', dest='limit', type=int, default=10, help='The limit of words.')
     parser.add_argument('-m', '--mode', action='store', dest='mode', default=parser_table.default_mode,
                         help='The parser mode.', choices=parser_table.keys())
-    parser.add_argument('-w', '--word', action='store', dest='word', default='', help='If you only count for words '
-                                                                                      'and find who said the most, '
-                                                                                      'fill this.')
+    parser.add_argument('-w', '--words', action='store', dest='word', default='', help='If you only count for words '
+                                                                                       'and find who said the most, '
+                                                                                       'fill this, separated by comma.')
     return parser.parse_args()
 
 
 if __name__ == '__main__':
     args = parse_args()
     if args.word != '':
-        plot_for_word(file=args.file, mode=args.mode, word=args.word, limit=args.limit)
+        plot_for_words(file=args.file, mode=args.mode, words=args.word.split(','), limit=args.limit)
     else:
         if args.qid == '':
             raise KeyError('you must specify qid')

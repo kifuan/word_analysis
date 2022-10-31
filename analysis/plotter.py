@@ -21,10 +21,10 @@ def plot_for_person(*, file: str, mode: str, qid: str, limit: int):
     plt.show()
 
 
-def plot_for_word(*, file: str, mode: str, word: str, limit: int):
+def plot_for_words(*, file: str, mode: str, words: list[str], limit: int):
     parser = MessageParser.get_parser(mode)
     data = parser.parse_file(file)
-    people, nums = get_topn(Counter.for_word(word, data, parser).count(), limit)
+    people, nums = get_topn(Counter.for_words(words, data, parser).count(), limit)
     plt.bar(people, nums)
-    plt.title(f'{word}出现的频率 - Top{limit}')
+    plt.title(f'{",".join(words)}出现的频率 - Top{limit}')
     plt.show()
