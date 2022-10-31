@@ -51,8 +51,9 @@ plt.rcParams["font.sans-serif"] = ['Microsoft YaHei', 'Heiti']
 
 def main(path: str, mode: str, qid: str, limit: int):
     limit = int(limit)
-    data = MessageParser.get_parser(mode).parse_file(path)
+    parser = MessageParser.get_parser(mode)
+    data = parser.parse_file(path)
     words, nums = count(data, qid, limit)
     plt.bar(words, nums)
-    plt.title(f'{qid}的词频 - Top{limit}')
+    plt.title(f'{parser.get_display_name(qid)}的词频 - Top{limit}')
     plt.show()
