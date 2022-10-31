@@ -18,7 +18,7 @@ def plot_for_person(*, file: str, mode: str, qid: str, limit: int):
     words, nums = get_topn(Counter.for_person(qid, data).count(), limit)
     length = len(list(nums))
     plt.bar(words, nums)
-    plt.title(f'{parser.get_display_name(qid)}的词频 - Top{min(length, limit)}')
+    plt.title(f'{parser.get_display_name(qid)}的词频 - Top {min(length, limit)}')
     plt.show()
 
 
@@ -28,5 +28,5 @@ def plot_for_words(*, file: str, mode: str, words: list[str], limit: int):
     people, nums = get_topn(Counter.for_words(words, data, parser).count(), limit)
     length = len(list(nums))
     plt.bar(people, nums)
-    plt.title(f'{",".join(words)}出现的频率 - Top{min(length, limit)}')
+    plt.title(f'{",".join(words)}出现的频率 - Top {min(length, limit)}')
     plt.show()
