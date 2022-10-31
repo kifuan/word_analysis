@@ -67,15 +67,11 @@ class MessageParser(ABC):
     def _(self):
         self.last_qid = self.extract_qid(self.line, self.line_number)
         self.line_data.setdefault(self.last_qid, [])
-        self.state = State.MESSAGE
         self.line_number += 1
         self.state = State.EMPTY
 
     @state_specific.register(State.MESSAGE)
     def _(self):
-        if starts_with_date(self.line):
-            self.state = State.ID
-            return
         self.line_data[self.last_qid].append(self.line)
         self.line_number += 1
         self.state = State.EMPTY
