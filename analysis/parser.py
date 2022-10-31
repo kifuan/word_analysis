@@ -128,8 +128,9 @@ class GroupMessageParser(MessageParser):
             return self.update_display_name(angel_brackets[-1], line, '<', '>')
 
         raise ScanningError(
-            f'Cannot find qid or email in line {line_number + 1}, but this line'
-            'starts with regular datetime, which is what we want.'
+            f'Cannot find qid or email in line {line_number + 1}.\n'
+            f'Content: {line}.'
+            'Did you forget to choose the mode to friend?'
         )
 
     def get_display_name(self, qid: str) -> str:
