@@ -39,7 +39,7 @@
 7. 现在可以用了，打开Console，输入类似于这样的命令：
 
    ```bash
-   > python analyze.py test 111222333 30
+   > python main.py test 111222333 30
    ```
 
    + `test` 是你保存的txt**文件名**。
