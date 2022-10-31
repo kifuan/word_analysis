@@ -1,7 +1,7 @@
 import re
-import sys
 import jieba
 import pkgutil
+import warnings
 import collections
 from abc import ABC, abstractmethod
 from .parser import LineData, MessageParser
@@ -69,7 +69,7 @@ class WordCounter(Counter):
 
             name = self.parser.get_display_name(qid)
             if name in result:
-                print(f'There are two or more people named {name}, we will keep whose qid is {qid}', file=sys.stderr)
+                warnings.warn(f'There are two or more people named {name}, we will keep the one whose qid is {qid}')
             result[name[:NAME_LIMIT]] = count
 
         return result

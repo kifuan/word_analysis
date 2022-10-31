@@ -1,5 +1,5 @@
+import warnings
 from typing import Type, TypeVar, Generic
-
 
 T = TypeVar('T')
 
@@ -20,13 +20,13 @@ class ConcreateTable(Generic[T]):
     def register(self, mode: str, *, default: bool = False):
         if default:
             if self.default_mode is not None:
-                raise RuntimeWarning(f'cannot set mode {mode} to default'
-                                     f'because {self.default_mode} is already set.')
+                warnings.warn(f'cannot set mode {mode} to default '
+                              f'because {self.default_mode} is already set.')
             else:
                 self.default_mode = mode
 
         if mode in self.table:
-            raise RuntimeWarning(f'rewriting mode {mode}')
+            warnings.warn(f'rewriting mode {mode}')
 
         def wrapper(t: Type[T]):
             self.table[mode] = t()
