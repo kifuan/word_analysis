@@ -85,7 +85,7 @@ class MessageParser(ABC):
 
     def parse_file(self, path: str) -> LineData:
         with open(path, 'r', encoding='utf-8') as f:
-            lines = [line.strip('\n') for line in f if line.strip('\n') != '']
+            lines = [line.strip('\n ') for line in f if not line.isspace()]
         return self.parse_lines(lines)
 
 
