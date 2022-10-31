@@ -126,7 +126,7 @@ class GroupMessageParser(MessageParser):
         )
 
 
-REMOVE_DATE = re.compile(r'^(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\s*)')
+REMOVE_DATE = re.compile(r'^(\d{4}-\d{2}-\d{2}\s+\d\d?:\d{2}:\d{2}\s*)')
 
 
 @concreate_parser.register('friend')
