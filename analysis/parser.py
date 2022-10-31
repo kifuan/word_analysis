@@ -55,7 +55,6 @@ class MessageParser(ABC):
 
     @state_specific.register(State.ID)
     def _(self):
-        assert starts_with_date(self.line), 'state ID should be applied when it starts with date.'
         self.last_id = self.extract_id(self.line, self.line_number)
         self.line_data.setdefault(self.last_id, [])
         self.state = State.MESSAGE
