@@ -25,16 +25,15 @@
 4. 把导出的文件和 `git clone` 下的代码放到同一目录，然后在控制台输入类似于这样的命令：
 
    ```bash
-   > python main.py test.txt group 111222333 30
-   > python main.py test.txt friend NAME 30
+   > python main.py -f test.txt -m group -q 111222333 -l 30
    ```
 
-   + `test.txt` 是你保存的**文件名**
-   + `group/friend` 
+   + `-f, --file` 是你保存的**文件名**
+   + `-m, --mode` 
       + 如果是群聊就是 `group`
       + 如果是好友就是 `friend`
-   + `111222333/NAME`
+   + `-q, --qid`
       + 如果是好友模式，你需要输入文件里显示的**用户名**
       + 如果是群聊模式，你需要输入这个人的**QQ号**
-   + `30` 是筛选出前多少个
+   + `-l, --limit` 是筛选出前多少个
 
