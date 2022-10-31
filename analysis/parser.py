@@ -134,6 +134,5 @@ class FriendMessageParser(MessageParser):
         return DATE_HEAD_REGEX.sub('', line)
 
     def get_display_name(self, qid: str) -> str:
-        # The friend parser uses displaying name as id,
-        # so just returning qid works.
+        # The friend parser uses displaying name as id, so just returning qid.
         return qid
