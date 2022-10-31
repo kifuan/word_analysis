@@ -52,7 +52,7 @@ class MessageParser(ABC):
 
     @state_specific.register(State.EMPTY)
     def _(self):
-        if starts_with_date(self.line):
+        if DATE_HEAD_REGEX.search(self.line):
             self.state = State.ID
             return
 
@@ -89,11 +89,6 @@ class MessageParser(ABC):
         return self.parse_lines(lines)
 
 
-def starts_with_date(line: str) -> bool:
-    # It starts with date.
-    return bool(re.search(r'^(\d{4}-\d{2}-\d{2}.+)', line))
-
-
 ANGLE_BRACKETS = re.compile(r'<(.*?)>')
 BRACKETS = re.compile(r'[(](.*?)[)]')
 
@@ -109,7 +104,7 @@ class GroupMessageParser(MessageParser):
         # If the username contains such pattern, it will be removed as well.
         # I don't think this is problematic, because the name is used to display.
         remove_qid = re.compile(f'[{lb}]({qid})[{rb}]')
-        self.display_name[qid] = REMOVE_DATE.sub('', remove_qid.sub('', line)).strip()
+        self.display_name[qid] = DATE_HEAD_REGEX.sub('', remove_qid.sub('', line)).strip()
         return qid
 
     def extract_qid(self, line: str, line_number: int) -> str:
@@ -133,13 +128,13 @@ class GroupMessageParser(MessageParser):
         return self.display_name[qid]
 
 
-REMOVE_DATE = re.compile(r'^(\d{4}-\d{2}-\d{2}\s+\d\d?:\d{2}:\d{2}\s*)')
+DATE_HEAD_REGEX = re.compile(r'^(\d{4}-\d{2}-\d{2}\s+\d\d?:\d{2}:\d{2}\s*)')
 
 
 @parser_table.register('friend')
 class FriendMessageParser(MessageParser):
     def extract_qid(self, line: str, line_number: int) -> str:
-        return REMOVE_DATE.sub('', line)
+        return DATE_HEAD_REGEX.sub('', line)
 
     def get_display_name(self, qid: str) -> str:
         # The friend parser uses displaying name as id,
