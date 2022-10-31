@@ -43,8 +43,8 @@ class MessageParser(ABC):
         raise NotImplementedError()
 
     @staticmethod
-    def get_parser(name: str) -> 'MessageParser':
-        return parser_table.get(name)
+    def get_parser(mode: str) -> 'MessageParser':
+        return parser_table.get(mode)
 
     @property
     def line(self) -> str:
@@ -102,7 +102,7 @@ ANGLE_BRACKETS = re.compile(r'<(.*?)>')
 BRACKETS = re.compile(r'[(](.*?)[)]')
 
 
-@parser_table.register('group')
+@parser_table.register('group', default=True)
 class GroupMessageParser(MessageParser):
     def __init__(self):
         super().__init__()
