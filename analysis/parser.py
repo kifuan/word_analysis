@@ -12,7 +12,7 @@ class ScanningError(Exception):
 
 class ConcreateParserTable:
     def __init__(self):
-        self.table = {}
+        self.table: dict[str, 'MessageParser'] = {}
 
     def get(self, name: str) -> 'MessageParser':
         if name not in self.table:
@@ -39,13 +39,11 @@ class MessageParser(ABC):
     def get_parser(name: str) -> 'MessageParser':
         return concreate_parser.get(name)
 
-    def parse_file(self, path: str) -> WordData:
-        with open(path, 'r', encoding='utf-8') as f:
-            lines = [line.strip('\n') for line in f if line.strip('\n') != '']
+    def parse_lines(self, lines: list[str]) -> WordData:
         result = {}
         # The state of scanning.
         scanning_state = False
-        # The metadata it is scanning for.
+        # The id it is scanning for.
         scanning_for = ''
         i = 0
         while i < len(lines):
@@ -54,7 +52,7 @@ class MessageParser(ABC):
                 # End of scanning for this term.
                 if line_contains_id:
                     # Note that we don't increment i there,
-                    # so that next loop will enter is_metadata branch.
+                    # so that next loop will enter line_contains_id branch.
                     scanning_state = False
                     continue
                 result[scanning_for].append(lines[i])
@@ -75,8 +73,14 @@ class MessageParser(ABC):
 
         return result
 
+    def parse_file(self, path: str) -> WordData:
+        # TODO use state machine
+        with open(path, 'r', encoding='utf-8') as f:
+            lines = [line.strip('\n') for line in f if line.strip('\n') != '']
+        return self.parse_lines(lines)
 
-def starts_with_date(line: str):
+
+def starts_with_date(line: str) -> bool:
     # It starts with date.
     return bool(re.search(r'^(\d{4}-\d{2}-\d{2}.+)', line))
 
