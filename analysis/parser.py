@@ -1,8 +1,7 @@
 import re
-from typing import Type
 from abc import ABC, abstractmethod
+from .concreate_table import ConcreateTable
 from .state import State, StateSpecificMethod
-
 
 # A dict that contains qid with all words they sent.
 LineData = dict[str, list[str]]
@@ -12,24 +11,7 @@ class ScanningError(Exception):
     ...
 
 
-class ConcreateParserTable:
-    def __init__(self):
-        self.table: dict[str, 'MessageParser'] = {}
-
-    def get(self, name: str) -> 'MessageParser':
-        if name not in self.table:
-            raise KeyError(f'no parser named {name}')
-        return self.table[name]
-
-    def register(self, name: str):
-        def wrapper(t: Type['MessageParser']):
-            self.table[name] = t()
-            return t
-
-        return wrapper
-
-
-concreate_parser = ConcreateParserTable()
+parser_table: ConcreateTable['MessageParser'] = ConcreateTable()
 
 
 class MessageParser(ABC):
@@ -52,7 +34,7 @@ class MessageParser(ABC):
 
     @staticmethod
     def get_parser(name: str) -> 'MessageParser':
-        return concreate_parser.get(name)
+        return parser_table.get(name)
 
     @property
     def line(self) -> str:
@@ -107,7 +89,7 @@ def starts_with_date(line: str) -> bool:
     return bool(re.search(r'^(\d{4}-\d{2}-\d{2}.+)', line))
 
 
-@concreate_parser.register('group')
+@parser_table.register('group')
 class GroupMessageParser(MessageParser):
     def extract_id(self, line: str, line_number: int) -> str:
         # Try to find it with ().
@@ -129,7 +111,7 @@ class GroupMessageParser(MessageParser):
 REMOVE_DATE = re.compile(r'^(\d{4}-\d{2}-\d{2}\s+\d\d?:\d{2}:\d{2}\s*)')
 
 
-@concreate_parser.register('friend')
+@parser_table.register('friend')
 class FriendMessageParser(MessageParser):
     def extract_id(self, line: str, line_number: int) -> str:
         return REMOVE_DATE.sub('', line)
