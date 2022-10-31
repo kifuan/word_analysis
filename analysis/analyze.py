@@ -5,7 +5,7 @@ import collections
 import matplotlib.pyplot as plt
 from typing import Iterable
 
-from .parser import MessageParser, WordData
+from .parser import MessageParser, LineData
 
 STOPWORDS = set(
     pkgutil.get_data(__name__, 'stopwords.txt')
@@ -28,7 +28,7 @@ def make_words_counter(messages: list[str]) -> dict[str, int]:
     return collections.Counter(words)
 
 
-def count(data: WordData, qid: str, limit: int) -> tuple[Iterable[str], Iterable[int]]:
+def count(data: LineData, qid: str, limit: int) -> tuple[Iterable[str], Iterable[int]]:
     if qid not in data.keys():
         raise KeyError(f'{qid} does not exist in the file. '
                        'Please ensure that you should find him/her by QQ ID or Email.')

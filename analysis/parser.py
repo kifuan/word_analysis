@@ -1,9 +1,11 @@
 import re
-from abc import ABC, abstractmethod
 from typing import Type
+from abc import ABC, abstractmethod
+from .state import State, StateSpecificMethod
+
 
 # A dict that contains qid with all words they sent.
-WordData = dict[str, list[str]]
+LineData = dict[str, list[str]]
 
 
 class ScanningError(Exception):
@@ -31,50 +33,70 @@ concreate_parser = ConcreateParserTable()
 
 
 class MessageParser(ABC):
+    state_specific = StateSpecificMethod()
+
+    def __init__(self):
+        self.state = State.EMPTY
+        self.last_id = ''
+        self.line_data: LineData = {}
+        self.line_number = 0
+        self.lines = []
+
+    # Just make the code less strange, because we should initialize
+    # properties before parsing, and calling __init__ is strange.
+    setup_vars = __init__
+
     @abstractmethod
     def extract_id(self, line: str, line_number: int) -> str:
-        ...
+        raise NotImplementedError()
 
     @staticmethod
     def get_parser(name: str) -> 'MessageParser':
         return concreate_parser.get(name)
 
-    def parse_lines(self, lines: list[str]) -> WordData:
-        result = {}
-        # The state of scanning.
-        scanning_state = False
-        # The id it is scanning for.
-        scanning_for = ''
-        i = 0
-        while i < len(lines):
-            line_contains_id = starts_with_date(lines[i])
-            if scanning_state:
-                # End of scanning for this term.
-                if line_contains_id:
-                    # Note that we don't increment i there,
-                    # so that next loop will enter line_contains_id branch.
-                    scanning_state = False
-                    continue
-                result[scanning_for].append(lines[i])
-                # Scan for next message, skip this line.
-                i += 1
-            elif line_contains_id:
-                scanning_state = True
-                scanning_for = self.extract_id(lines[i], i)
-                result.setdefault(scanning_for, [])
-                # Scan for messages, skip this line.
-                i += 1
-            else:
-                raise ScanningError(
-                    f'This line is neither message nor metadata.'
-                    f'Line number: {i + 1}\n'
-                    f'Content: {lines[i]}'
-                )
+    @property
+    def line(self) -> str:
+        return self.lines[self.line_number]
 
-        return result
+    @state_specific.register(State.EMPTY)
+    def _(self):
+        if starts_with_date(self.line):
+            self.state = State.ID
+            return
 
-    def parse_file(self, path: str) -> WordData:
-        # TODO use state machine
+        # It is the first line, but it does not contain id, so just skip it.
+        if self.last_id == '':
+            self.line_number += 1
+            return
+
+        self.state = State.MESSAGE
+
+    @state_specific.register(State.ID)
+    def _(self):
+        assert starts_with_date(self.line), 'state ID should be applied when it starts with date.'
+        self.last_id = self.extract_id(self.line, self.line_number)
+        self.line_data.setdefault(self.last_id, [])
+        self.state = State.MESSAGE
+        self.line_number += 1
+        self.state = State.EMPTY
+
+    @state_specific.register(State.MESSAGE)
+    def _(self):
+        if starts_with_date(self.line):
+            self.state = State.ID
+            return
+        self.line_data[self.last_id].append(self.line)
+        self.line_number += 1
+        self.state = State.EMPTY
+
+    def parse_lines(self, lines: list[str]) -> LineData:
+        self.setup_vars()
+        self.lines = lines
+        while self.line_number < len(lines):
+            MessageParser.state_specific.apply(self.state, self)
+        return self.line_data
+
+    def parse_file(self, path: str) -> LineData:
         with open(path, 'r', encoding='utf-8') as f:
             lines = [line.strip('\n') for line in f if line.strip('\n') != '']
         return self.parse_lines(lines)

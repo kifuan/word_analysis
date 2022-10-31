@@ -22,21 +22,7 @@
 
    最好在这里把文件名改一改，改成英文的，比较稳妥。
 
-4. 打开VSCode（别告诉我你没有），并且把之前导出的txt文件和`git clone`下来的文件放到一个目录下。
-
-5. 把这里边的前几行全删了，让消息记录顶格。
-
-   ![删除前](screenshots/4.png)
-
-   ![删除后](screenshots/5.png)
-
-6. 把该死的BOM删掉。
-
-   ![Step 1 2](screenshots/6.png)
-
-   ![Step 3](screenshots/7.png)
-
-7. 现在可以用了，打开Console，输入类似于这样的命令：
+4. 把导出的文件和 `git clone` 下的代码放到同一目录，然后在控制台输入类似于这样的命令：
 
    ```bash
    > python main.py test.txt group 111222333 30
