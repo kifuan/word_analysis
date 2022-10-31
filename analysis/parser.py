@@ -3,6 +3,10 @@ from abc import ABC, abstractmethod
 from .concreate_table import ConcreateTable
 from .state import State, StateSpecificMethod
 
+ANGLE_BRACKETS_REGEX = re.compile(r'<(.*?)>')
+BRACKETS_REGEX = re.compile(r'[(](.*?)[)]')
+DATE_HEAD_REGEX = re.compile(r'^(\d{4}-\d{2}-\d{2}\s+\d\d?:\d{2}:\d{2}\s*)')
+
 # A dict that contains qid with all words they sent.
 LineData = dict[str, list[str]]
 
@@ -89,10 +93,6 @@ class MessageParser(ABC):
         return self.parse_lines(lines)
 
 
-ANGLE_BRACKETS = re.compile(r'<(.*?)>')
-BRACKETS = re.compile(r'[(](.*?)[)]')
-
-
 @parser_table.register('group', default=True)
 class GroupMessageParser(MessageParser):
     def __init__(self):
@@ -109,12 +109,12 @@ class GroupMessageParser(MessageParser):
 
     def extract_qid(self, line: str, line_number: int) -> str:
         # Try to find it with ().
-        brackets = BRACKETS.findall(line)
+        brackets = BRACKETS_REGEX.findall(line)
         if brackets:
             return self.update_display_name(brackets[-1], line, '(', ')')
 
         # Try to find it with <>.
-        angel_brackets = ANGLE_BRACKETS.findall(line)
+        angel_brackets = ANGLE_BRACKETS_REGEX.findall(line)
         if angel_brackets:
             return self.update_display_name(angel_brackets[-1], line, '<', '>')
 
@@ -126,9 +126,6 @@ class GroupMessageParser(MessageParser):
 
     def get_display_name(self, qid: str) -> str:
         return self.display_name[qid]
-
-
-DATE_HEAD_REGEX = re.compile(r'^(\d{4}-\d{2}-\d{2}\s+\d\d?:\d{2}:\d{2}\s*)')
 
 
 @parser_table.register('friend')
