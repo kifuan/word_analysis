@@ -1,14 +1,12 @@
 import re
 from abc import ABC, abstractmethod
 from .concreate_table import ConcreateTable
+from .message_counter import MessageCounter
 from .state import State, StateSpecificMethod
 
 ANGLE_BRACKETS_REGEX = re.compile(r'<(.*?)>')
 BRACKETS_REGEX = re.compile(r'[(](.*?)[)]')
 DATE_HEAD_REGEX = re.compile(r'^(\d{4}-\d{2}-\d{2}\s+\d\d?:\d{2}:\d{2}\s*)')
-
-# A dict that contains qid with all words they sent.
-LineData = dict[str, list[str]]
 
 
 class ScanningError(Exception):
@@ -27,8 +25,7 @@ class MessageParser(ABC):
         please rewrite setup_vars as well.
         """
         self.state = State.EMPTY
-        self.last_qid = ''
-        self.line_data: LineData = {}
+        self.counter = MessageCounter()
         self.line_number = 0
         self.lines = []
 
@@ -60,8 +57,8 @@ class MessageParser(ABC):
             self.state = State.ID
             return
 
-        # It is the first line, but it does not contain id, so just skip it.
-        if self.last_qid == '':
+        # If the counter hasn't started yet, and current line isn't seem to contain qid.
+        if not self.counter.is_started():
             self.line_number += 1
             return
 
@@ -69,25 +66,24 @@ class MessageParser(ABC):
 
     @state_specific.register(State.ID)
     def _(self):
-        self.last_qid = self.extract_qid(self.line, self.line_number)
-        self.line_data.setdefault(self.last_qid, [])
+        self.counter.change_qid(self.extract_qid(self.line, self.line_number))
         self.line_number += 1
         self.state = State.EMPTY
 
     @state_specific.register(State.MESSAGE)
     def _(self):
-        self.line_data[self.last_qid].append(self.line)
+        self.counter.add_message(self.line)
         self.line_number += 1
         self.state = State.EMPTY
 
-    def parse_lines(self, lines: list[str]) -> LineData:
+    def parse_lines(self, lines: list[str]) -> MessageCounter:
         self.setup_vars()
         self.lines = lines
         while self.line_number < len(lines):
             MessageParser.state_specific.apply(self.state, self)
-        return self.line_data
+        return self.counter
 
-    def parse_file(self, path: str) -> LineData:
+    def parse_file(self, path: str) -> MessageCounter:
         with open(path, 'r', encoding='utf-8') as f:
             lines = [line.strip('\n ') for line in f if not line.isspace()]
         return self.parse_lines(lines)

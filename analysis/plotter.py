@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 from typing import Iterable
-from .counter import Counter
 from .parser import MessageParser
 
 # Support for Chinese characters.
@@ -18,19 +17,17 @@ def get_topn(counter: dict[str, int], limit: int) -> tuple[Iterable[str], Iterab
 
 def plot_for_person(*, file: str, mode: str, qid: str, limit: int):
     parser = MessageParser.get_parser(mode)
-    data = parser.parse_file(file)
-    words, nums = get_topn(Counter.for_person(qid, data).count(), limit)
-    length = len(list(nums))
+    counter = parser.parse_file(file)
+    words, nums = get_topn(counter.count_for_person(qid), limit)
     plt.bar(words, nums)
-    plt.title(f'{parser.get_display_name(qid)}的词频 - Top {min(length, limit)}')
+    plt.title(f'{parser.get_display_name(qid)}的词频 - Top {min(len(list(nums)), limit)}')
     plt.show()
 
 
 def plot_for_words(*, file: str, mode: str, words: list[str], limit: int):
     parser = MessageParser.get_parser(mode)
-    data = parser.parse_file(file)
-    people, nums = get_topn(Counter.for_words(words, data, parser).count(), limit)
-    length = len(list(nums))
-    plt.bar(people, nums)
-    plt.title(f'{",".join(words)}出现的频率 - Top {min(length, limit)}')
+    counter = parser.parse_file(file)
+    ids, nums = get_topn(counter.count_for_words(words), limit)
+    plt.bar([parser.get_display_name(qid) for qid in ids], nums)
+    plt.title(f'{",".join(words)}出现的频率 - Top {min(len(list(nums)), limit)}')
     plt.show()
