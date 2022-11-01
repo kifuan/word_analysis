@@ -99,7 +99,14 @@ class GroupMessageParser(MessageParser):
         super().__init__()
         self.display_name = {}
 
+    # noinspection GrazieInspection
     def update_display_name(self, qid: str, line: str) -> str:
+        """
+        Updates the display name dictionary and returns qid.
+        :param qid: the qid.
+        :param line: the line.
+        :return: the qid.
+        """
         # 2 bracket characters should be removed as well.
         self.display_name[qid] = DATE_HEAD_REGEX.sub('', line[:-len(qid)-2]).strip()
         return qid
