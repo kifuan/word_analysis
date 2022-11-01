@@ -99,24 +99,21 @@ class GroupMessageParser(MessageParser):
         super().__init__()
         self.display_name = {}
 
-    def update_display_name(self, qid: str, line: str, lb: str, rb: str) -> str:
-        # Remove the bracket with qid in it.
-        # If the username contains such pattern, it will be removed as well.
-        # I don't think this is problematic, because the name is used to display.
-        remove_qid = re.compile(f'[{lb}]([{qid}])[{rb}]')
-        self.display_name[qid] = DATE_HEAD_REGEX.sub('', remove_qid.sub('', line)).strip()
+    def update_display_name(self, qid: str, line: str) -> str:
+        # 2 bracket characters should be removed as well.
+        self.display_name[qid] = DATE_HEAD_REGEX.sub('', line[:-len(qid)-2]).strip()
         return qid
 
     def extract_qid(self, line: str, line_number: int) -> str:
         # Try to find it with ().
         brackets = BRACKETS_REGEX.findall(line)
         if brackets:
-            return self.update_display_name(brackets[-1], line, '(', ')')
+            return self.update_display_name(brackets[-1], line)
 
         # Try to find it with <>.
         angel_brackets = ANGLE_BRACKETS_REGEX.findall(line)
         if angel_brackets:
-            return self.update_display_name(angel_brackets[-1], line, '<', '>')
+            return self.update_display_name(angel_brackets[-1], line)
 
         raise ScanningError(
             f'Cannot find qid or email in line {line_number + 1}.\n'
