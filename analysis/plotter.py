@@ -9,6 +9,7 @@ plt.rcParams["font.sans-serif"] = ['Microsoft YaHei', 'Heiti']
 
 def get_topn(counter: dict[str, int], limit: int) -> tuple[Iterable[str], Iterable[int]]:
     items = sorted(counter.items(), key=lambda item: item[1], reverse=True)[:limit]
+    print(f'The data to show is {items}')
     if len(items) == 0:
         raise ValueError('cannot get any data')
     words, counts = zip(*items)
