@@ -25,6 +25,15 @@ class MessageCounter:
         self.data: dict[str, list[Generator[str, Any, None]]] = {}
         self.qid: str = ''
 
+    @staticmethod
+    def get_topn(counter_data: dict[str, int], limit: int) -> tuple[list[str], list[int]]:
+        items = sorted(counter_data.items(), key=lambda item: item[1], reverse=True)[:limit]
+        print(f'The data to show is {items}')
+        if len(items) == 0:
+            raise ValueError('cannot get any data')
+        words, counts = map(list, zip(*items))
+        return words, counts
+
     def is_started(self) -> bool:
         return self.qid != ''
 
