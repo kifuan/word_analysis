@@ -103,7 +103,7 @@ class GroupMessageParser(MessageParser):
         # Remove the bracket with qid in it.
         # If the username contains such pattern, it will be removed as well.
         # I don't think this is problematic, because the name is used to display.
-        remove_qid = re.compile(f'[{lb}]({qid})[{rb}]')
+        remove_qid = re.compile(f'[{lb}]([{qid}])[{rb}]')
         self.display_name[qid] = DATE_HEAD_REGEX.sub('', remove_qid.sub('', line)).strip()
         return qid
 
